@@ -1,7 +1,10 @@
 {
-  "name": "my-tauri-app",
-  "private": true,
+  "name": "姐姐不累工具箱",
   "version": "0.1.0",
+  "description": "一款致力于减少陈晓雨工作量的软件",
+  "author": "yuecheng",
+  "license": "MIT",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +15,7 @@
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.1",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-tooltip": "^1.1.3",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-shell": "^2",
     "class-variance-authority": "^0.7.0",

@@ -4,7 +4,7 @@ import { FileSpreadsheet } from "lucide-react";
 const tools = [
   {
     title: "平时成绩计算",
-    description: "暂时只适用广东肇庆航空学院的平时成绩计算",
+    description: "只适用广东肇庆航空学院的平时成绩计算",
     icon: FileSpreadsheet,
     to: "/calligraphy",
   },
