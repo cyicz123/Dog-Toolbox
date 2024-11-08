@@ -5,7 +5,7 @@ import { FolderOpen, Play, FileDown } from "lucide-react";
 
 export function ConfigPanel() {
   return (
-    <div className="w-full md:w-[300px] p-4 border rounded-lg bg-card space-y-6">
+    <div className="w-full h-full p-4 border rounded-lg bg-card flex flex-col gap-4">
       <div className="space-y-4">
         {/* 文件夹选择 */}
         <div className="space-y-2">
@@ -26,7 +26,7 @@ export function ConfigPanel() {
       </div>
 
       {/* 操作按钮 */}
-      <div className="space-y-2">
+      <div className="mt-auto space-y-2">
         <Button className="w-full" size="lg">
           <Play className="mr-2 h-4 w-4" />
           开始处理
