@@ -8,6 +8,11 @@
   "permissions": [
     "core:default",
     "shell:allow-open",
-    "dialog:default"
+    "dialog:default",
+    "fs:allow-read",
+    "fs:allow-write",
+    "fs:allow-read-dir",
+    "fs:allow-read-file",
+    "fs:allow-write-file"
   ]
 }

@@ -5,6 +5,8 @@ declare module "*/package.json" {
     description?: string;
     author?: string;
     license?: string;
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
   }
 
   const value: PackageJson;

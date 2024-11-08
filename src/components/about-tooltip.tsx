@@ -18,12 +18,9 @@ export function AboutTooltip() {
           </Button>
         </TooltipTrigger>
         <TooltipContent className="p-4 space-y-2">
-          <p className="font-semibold text-center">{pkg.name}</p>
-          <p className="text-sm text-muted-foreground">{pkg.description}</p>
-          <div className="my-2" />
-          <p className="text-sm text-muted-foreground">作者: {pkg.author}</p>
+          <p className="font-semibold">{pkg.name}</p>
           <p className="text-sm text-muted-foreground">版本: {pkg.version}</p>
-          <p className="text-sm text-muted-foreground">许可证: {pkg.license}</p>
+          <p className="text-sm text-muted-foreground">{pkg.description}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
