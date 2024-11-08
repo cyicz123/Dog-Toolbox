@@ -10,7 +10,7 @@ export function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-[60px] bg-background border-r flex flex-col items-center py-4 space-y-4">
+    <div className="fixed top-0 w-full md:w-[60px] h-[60px] md:h-screen bg-background border-b md:border-b-0 md:border-r flex flex-row md:flex-col items-center justify-between md:justify-start px-4 md:px-0 md:py-4 md:space-y-4 z-50">
       <Link to="/">
         <Button
           variant="ghost"
@@ -20,27 +20,29 @@ export function Sidebar() {
           <Home className="h-[1.2rem] w-[1.2rem]" />
         </Button>
       </Link>
-      <div className="flex-1" />
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      >
-        {theme === "dark" ? (
-          <Sun className="h-[1.2rem] w-[1.2rem]" />
-        ) : (
-          <Moon className="h-[1.2rem] w-[1.2rem]" />
-        )}
-      </Button>
-      <Link to="/about">
+      <div className="hidden md:block md:flex-1" />
+      <div className="flex flex-row md:flex-col items-center gap-2 md:gap-4">
         <Button
           variant="ghost"
           size="icon"
-          className={isActive("/about") ? "bg-accent" : ""}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          <Info className="h-[1.2rem] w-[1.2rem]" />
+          {theme === "dark" ? (
+            <Sun className="h-[1.2rem] w-[1.2rem]" />
+          ) : (
+            <Moon className="h-[1.2rem] w-[1.2rem]" />
+          )}
         </Button>
-      </Link>
+        <Link to="/about">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={isActive("/about") ? "bg-accent" : ""}
+          >
+            <Info className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 } 

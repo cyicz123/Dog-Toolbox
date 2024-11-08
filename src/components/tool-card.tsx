@@ -12,10 +12,10 @@ interface ToolCardProps {
 
 export function ToolCard({ title, description, icon: Icon, to, className }: ToolCardProps) {
   return (
-    <Link to={to}>
+    <Link to={to} className="w-full md:w-auto">
       <div
         className={cn(
-          "w-[200px] p-6 rounded-lg border bg-card shadow-lg hover:shadow-xl transition-all relative group",
+          "w-full md:w-[200px] p-6 rounded-lg border bg-card shadow-lg hover:shadow-xl transition-all relative group",
           "flex flex-col items-center text-center space-y-4",
           className
         )}

@@ -12,8 +12,8 @@ const tools = [
 
 export function HomePage() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-2 text-center mb-8">
+    <div className="space-y-6 w-full">
+      <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">工具箱</h1>
         <p className="text-muted-foreground">
           选择下面的工具开始使用
