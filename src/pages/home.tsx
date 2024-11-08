@@ -19,7 +19,7 @@ export function HomePage() {
           选择下面的工具开始使用
         </p>
       </div>
-      <div className="flex justify-start md:justify-center mt-4 md:mt-0">
+      <div className="flex justify-center mt-4 md:mt-0">
         {tools.map((tool) => (
           <ToolCard key={tool.to} {...tool} />
         ))}

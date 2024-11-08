@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "my-tauri-app",
+  "productName": "dog-toolbox",
   "version": "0.1.0",
-  "identifier": "com.my-tauri-app.app",
+  "identifier": "com.dog-toolbox.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "my-tauri-app",
+        "title": "狗狗工具箱",
         "width": 800,
         "height": 600
       }
