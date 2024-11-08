@@ -1,11 +1,11 @@
 import { ToolCard } from "@/components/tool-card";
-import { Type } from "lucide-react";
+import { FileSpreadsheet } from "lucide-react";
 
 const tools = [
   {
-    title: "书法字体识别",
-    description: "识别图片中的书法字体",
-    icon: Type,
+    title: "平时成绩计算",
+    description: "暂时只适用广东肇庆航空学院的平时成绩计算",
+    icon: FileSpreadsheet,
     to: "/calligraphy",
   },
 ];
