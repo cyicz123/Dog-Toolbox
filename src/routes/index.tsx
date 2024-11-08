@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { MainLayout } from "@/components/layout/main-layout";
 import { HomePage } from "@/pages/home";
+import { GradeCalculatorPage } from "@/pages/grade-calculator";
 
 export const router = createBrowserRouter([
   {
@@ -11,7 +12,10 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
-      // 其他工具路由可以后续添加
+      {
+        path: "grade-calculator",
+        element: <GradeCalculatorPage />,
+      },
     ],
   },
 ]); 
