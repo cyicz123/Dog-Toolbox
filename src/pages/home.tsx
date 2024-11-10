@@ -1,5 +1,5 @@
 import { ToolCard } from "@/components/tool-card";
-import { FileSpreadsheet } from "lucide-react";
+import { FileSpreadsheet, ClipboardList } from "lucide-react";
 
 const tools = [
   {
@@ -8,6 +8,12 @@ const tools = [
     icon: FileSpreadsheet,
     to: "/grade-calculator",
   },
+  {
+    title: "点名册生成",
+    description: "根据学习通签到记录生成点名册",
+    icon: ClipboardList,
+    to: "/roster-generator",
+  }
 ];
 
 export function HomePage() {
