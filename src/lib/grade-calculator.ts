@@ -22,6 +22,22 @@ export class GradeCalculator {
     return message;
   }
 
+  private writeWarningLog(message: string) {
+    this.logs.push(`⚠️ ${message}`);
+  }
+
+  private writeSuccessLog(message: string) {
+    this.logs.push(`✅ ${message}`);
+  }
+
+  private writeErrorLog(message: string) {
+    this.logs.push(`❌ 错误: ${message}`);
+  }
+
+  private writeInfoLog(message: string) {
+    this.logs.push(`ℹ️ ${message}`);
+  }
+
   private async readExcelFile(filePath: string): Promise<XLSX.WorkBook> {
     const buffer = await readFile(filePath);
     return XLSX.read(buffer);
@@ -39,7 +55,7 @@ export class GradeCalculator {
     );
 
     const totalAttendance = attendanceFiles.length;
-    this.writeLog(`${folderPath}签到文件处理情况:`);
+    this.writeInfoLog(`${folderPath}签到文件处理情况:`);
     this.writeLog(`找到签到文件数量: ${totalAttendance}`);
 
     for (const file of attendanceFiles) {
@@ -60,7 +76,7 @@ export class GradeCalculator {
       });
       
       const studentCount = formattedData.length;
-      this.writeLog(`文件 ${file.name} 中的学生数: ${studentCount}`);
+      this.writeInfoLog(`文件 ${file.name} 中的学生数: ${studentCount}`);
 
       for (const row of formattedData) {
         const studentName = row['姓名'];
@@ -98,7 +114,7 @@ export class GradeCalculator {
       !f.name?.startsWith('~$')
     );
 
-    this.writeLog(`\n${folderPath}作业完成情况处理:`);
+    this.writeInfoLog(`${folderPath}作业完成情况处理:`);
     
     if (homeworkFiles.length > 0 && homeworkFiles[0].name) {
       const workbook = await this.readExcelFile(`${folderPath}/${homeworkFiles[0].name}`);
@@ -116,7 +132,7 @@ export class GradeCalculator {
       });
       
       const studentCount = formattedData.length;
-      this.writeLog(`作业文件 ${homeworkFiles[0].name} 中的学生数: ${studentCount}`);
+      this.writeInfoLog(`作业文件 ${homeworkFiles[0].name} 中的学生数: ${studentCount}`);
 
       let uncompleted = 0;
       for (const row of formattedData) {
@@ -130,8 +146,8 @@ export class GradeCalculator {
         }
       }
 
-      this.writeLog(`未完成作业的学生数: ${uncompleted}`);
-      this.writeLog(`作业完成率: ${((studentCount-uncompleted)/studentCount*100).toFixed(2)}%`);
+      this.writeInfoLog(`未完成作业的学生数: ${uncompleted}`);
+      this.writeInfoLog(`作业完成率: ${((studentCount-uncompleted)/studentCount*100).toFixed(2)}%`);
     }
   }
 
@@ -172,11 +188,12 @@ export class GradeCalculator {
         return obj;
       });
 
-      this.writeLog(`\n教务系统名单处理:`);
-      this.writeLog(`教务系统名单中的学生数: ${formattedData.length}`);
+      this.writeInfoLog(`教务系统名单处理:`);
+      this.writeInfoLog(`教务系统名单中的学生数: ${formattedData.length}`);
 
       let foundCount = 0;
       let notFoundCount = 0;
+      const notFoundStudents: string[] = [];
 
       // 更新成绩
       const updatedData = formattedData.map(row => {
@@ -185,15 +202,21 @@ export class GradeCalculator {
           foundCount++;
           return { ...row, '平时成绩': studentDict[studentName].finalScore };
         } else {
-          this.writeLog(`未找到学生: ${studentName}`);
           notFoundCount++;
+          notFoundStudents.push(studentName);
           return row;
         }
       });
 
-      this.writeLog(`成绩更新统计:`);
-      this.writeLog(`成功更新成绩的学生数: ${foundCount}`);
-      this.writeLog(`未找到的学生数: ${notFoundCount}`);
+      this.writeInfoLog(`成绩更新统计:`);
+      this.writeSuccessLog(`成功更新成绩的学生数: ${foundCount}`);
+      this.writeWarningLog(`未找到的学生数: ${notFoundCount}`);
+      if (notFoundStudents.length > 0) {
+        this.writeWarningLog('以下学生未找到签到记录：');
+        notFoundStudents.forEach(name => {
+          this.writeWarningLog(`  > ${name}`);
+        });
+      }
 
       // 创建新的工作簿并写入数据
       const newWorkbook = XLSX.utils.book_new();
@@ -209,29 +232,66 @@ export class GradeCalculator {
 
   async process(folderPath: string, threshold: number): Promise<ProcessResult> {
     this.logs = [];
-    
     this.writeLog(`开始处理时间: ${new Date().toLocaleString()}`);
-    this.writeLog(`签到率阈值设置为: ${threshold}`);
-    this.writeLog(`\n开始处理文件夹: ${folderPath}`);
+    this.writeLog(`签到率阈值设置为: ${(threshold * 100).toFixed(1)}%`);
 
-    // 处理签到文件
-    const [studentDict, _] = await this.processAttendanceFiles(folderPath);
+    try {
+      // 获取并筛选文件
+      const files = await readDir(folderPath);
+      const attendanceFiles = files.filter(f => 
+        (f.name?.endsWith('.xlsx') || f.name?.endsWith('.xls')) && 
+        f.name?.includes('签到统计详情') &&
+        !f.name?.startsWith('~$')
+      );
 
-    // 处理作业情况
-    await this.processHomework(folderPath, studentDict);
+      const homeworkFiles = files.filter(f => 
+        (f.name?.endsWith('.xlsx') || f.name?.endsWith('.xls')) && 
+        f.name?.includes('课程平时作业') &&
+        !f.name?.startsWith('~$')
+      );
 
-    // 计算最终成绩
-    this.calculateFinalScore(studentDict, threshold);
+      const systemFiles = files.filter(f => 
+        (f.name?.endsWith('.xlsx') || f.name?.endsWith('.xls')) && 
+        f.name?.includes('教务系统名单') &&
+        !f.name?.startsWith('~$')
+      );
 
-    // 更新教务系统名单
-    const result = await this.updateScoresInSystem(folderPath, studentDict);
+      this.writeInfoLog(`找到签到文件数量: ${attendanceFiles.length}`);
+      this.writeInfoLog(`找到作业文件数量: ${homeworkFiles.length}`);
+      this.writeInfoLog(`找到教务系统名单数量: ${systemFiles.length}`);
 
-    this.writeLog(`\n处理结束时间: ${new Date().toLocaleString()}`);
+      // 处理签到数据
+      if (attendanceFiles.length === 0) {
+        this.writeWarningLog('未找到签到文件，请检查文件夹');
+        return { logs: this.logs, result: null };
+      }
 
-    return {
-      logs: this.logs,
-      result: result
-    };
+      // 处理签到文件
+      const [studentDict, _] = await this.processAttendanceFiles(folderPath);
+
+      // 处理作业情况
+      await this.processHomework(folderPath, studentDict);
+
+      // 计算最终成绩
+      this.calculateFinalScore(studentDict, threshold);
+
+      // 更新教务系统名单
+      const result = await this.updateScoresInSystem(folderPath, studentDict);
+
+      this.writeLog(`\n处理结束时间: ${new Date().toLocaleString()}`);
+      
+      return {
+        logs: this.logs,
+        result: result
+      };
+
+    } catch (err) {
+      this.writeErrorLog(`处理过程出错: ${err}`);
+      return {
+        logs: this.logs,
+        result: null
+      };
+    }
   }
 
   async generateZip(results: Map<string, Uint8Array>): Promise<Uint8Array> {

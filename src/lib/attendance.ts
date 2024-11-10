@@ -36,6 +36,22 @@ export class RosterGenerator {
         return message;
     }
 
+    private writeWarningLog(message: string) {
+        this.logs.push(`⚠️ ${message}`);
+    }
+
+    private writeSuccessLog(message: string) {
+        this.logs.push(`✅ ${message}`);
+    }
+
+    private writeErrorLog(message: string) {
+        this.logs.push(`❌ 错误: ${message}`);
+    }
+
+    private writeInfoLog(message: string) {
+        this.logs.push(`ℹ️ ${message}`);
+    }
+
     private async readExcelFile(filePath: string): Promise<XLSX.WorkBook> {
         const buffer = await readFile(filePath);
         return XLSX.read(buffer);
@@ -270,13 +286,14 @@ export class RosterGenerator {
             }
         });
 
+        this.writeInfoLog(`教务处点名册学生数据: ${data.length} 行`);
         // 输出未找到的学生名单
         if (notFoundStudents.length > 0) {
-            this.writeLog('\n⚠️ 以下学生未找到签到记录：');
+            this.writeWarningLog(`以下学生未找到签到记录：`);
             notFoundStudents.forEach(name => {
-                this.writeLog(`  > ${name}`);
+                this.writeWarningLog(`  > ${name} `);
             });
-            this.writeLog(`共 ${notFoundStudents.length} 名学生未找到签到记录\n`);
+            this.writeWarningLog(`共 ${notFoundStudents.length} 名学生未找到签到记录\n`);
         }
 
         // 创建新的工作簿
@@ -332,15 +349,16 @@ export class RosterGenerator {
                     !f.name?.startsWith('~$')
                 );
 
-            this.writeLog(`找到签到文件数量: ${attendanceFiles.length}`);
-            this.writeLog(`找到点名册文件数量: ${rosterFiles.length}`);
+            this.writeInfoLog(`找到签到文件数量: ${attendanceFiles.length}`);
+            this.writeInfoLog(`找到点名册文件数量: ${rosterFiles.length}`);
 
             // 处理每个班级的文件
             for (const attendanceFile of attendanceFiles) {
                 if (!attendanceFile.name) continue;
                 
                 const className = await basename(attendanceFile.name, '.xlsx');
-                this.writeLog(`\n处理班级: ${className}`);
+                this.writeLog(`\n`);
+                this.writeInfoLog(`处理班级: ${className}`);
 
                 // 查找对应的点名册文件
                 const rosterFile = rosterFiles.find(f => 
@@ -348,7 +366,7 @@ export class RosterGenerator {
                 );
 
                 if (!rosterFile?.name) {
-                    this.writeLog(`未找到${className}的点名册文件，跳过处理`);
+                    this.writeWarningLog(`未找到${className}的点名册文件，跳过处理`);
                     continue;
                 }
 
@@ -367,7 +385,7 @@ export class RosterGenerator {
                 );
                 
                 results.set(className, updatedRoster);
-                this.writeLog(`成功更新点名册: ${rosterFile.name}`);
+                this.writeSuccessLog(`成功更新点名册: ${rosterFile.name}`);
             }
 
             // 生成压缩包
@@ -386,7 +404,7 @@ export class RosterGenerator {
             };
 
         } catch (err) {
-            this.writeLog(`处理过程出错: ${err}`);
+            this.writeErrorLog(`处理过程出错: ${err}`);
             return {
                 logs: this.logs,
                 result: null
