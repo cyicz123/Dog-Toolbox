@@ -107,7 +107,7 @@ export class RosterGenerator {
     }
 
     private calculateAttendanceStats(studentMap: StudentMap): void {
-        for (const [name, studentRecord] of Object.entries(studentMap)) {
+        for (const [_, studentRecord] of Object.entries(studentMap)) {
             const attendanceList = studentRecord.attendanceRecords.map(record => 
                 record.status && record.status !== '未参与' ? 1 : 0
             );

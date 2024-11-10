@@ -40,7 +40,7 @@ export function OutputPanel({ logs }: OutputPanelProps) {
       <div className="w-full h-[400px] border rounded-lg bg-card p-4 overflow-auto font-mono text-sm">
         {logs.length > 0 ? (
           <div className="space-y-1">
-            {logs.map((log, index) => processLog(log))}
+            {logs.map((log) => processLog(log))}
           </div>
         ) : (
           <p className="text-muted-foreground text-center">
