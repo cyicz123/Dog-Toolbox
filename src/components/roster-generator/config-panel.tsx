@@ -5,7 +5,6 @@ import { FolderOpen, Play, FileDown } from "lucide-react";
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { useState } from 'react';
-import { basename } from "@tauri-apps/api/path";
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { RosterGenerator } from "@/lib/attendance";
 
 interface ConfigPanelProps {
   onProcess: (logs: string[]) => void;
@@ -59,11 +59,14 @@ export function ConfigPanel({ onProcess }: ConfigPanelProps) {
   };
 
   const handleProcess = async () => {
-    // TODO: 实现处理逻辑
     setProcessing(true);
     try {
-      // 这里添加处理逻辑
-      onProcess(['开始处理...']);
+      const generator = new RosterGenerator();
+      const result = await generator.process(attendancePath, rosterPath);
+      onProcess(result.logs);
+      if (result.result) {
+        setResult(result.result);
+      }
     } catch (err) {
       console.error('处理过程出错:', err);
       onProcess([`处理过程出错: ${err}`]);
@@ -76,10 +79,10 @@ export function ConfigPanel({ onProcess }: ConfigPanelProps) {
 
     try {
       const savePath = await save({
-        defaultPath: `点名册_${new Date().toISOString().replace(/[:.]/g, '-')}.xlsx`,
+        defaultPath: `点名册_${new Date().toISOString().replace(/[:.]/g, '-')}.zip`,
         filters: [{
-          name: 'Excel Workbook',
-          extensions: ['xlsx']
+          name: 'Zip File',
+          extensions: ['zip']
         }]
       });
 
