@@ -25,7 +25,7 @@ export function HomePage() {
           选择下面的工具开始使用
         </p>
       </div>
-      <div className="flex justify-center mt-4 md:mt-0">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-2 mt-4 md:gap-4 md:mt-0">
         {tools.map((tool) => (
           <ToolCard key={tool.to} {...tool} />
         ))}
