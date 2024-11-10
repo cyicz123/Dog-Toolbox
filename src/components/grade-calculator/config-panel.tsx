@@ -7,6 +7,13 @@ import { writeFile } from '@tauri-apps/plugin-fs';
 import { useState } from 'react';
 import { GradeCalculator } from "@/lib/grade-calculator";
 import { basename } from "@tauri-apps/api/path";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 
 interface ConfigPanelProps {
   onProcess: (logs: string[]) => void;
@@ -98,7 +105,20 @@ export function ConfigPanel({ onProcess }: ConfigPanelProps) {
       <div className="space-y-4">
         {/* 文件夹选择 */}
         <div className="space-y-2">
-          <Label>文件夹位置</Label>
+          <div className="flex items-center gap-1">
+            <Label>文件夹位置</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>选择包含学生签到记录的文件夹</p>
+                  <p>可以同时选择多个文件夹进行批量处理</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="flex gap-2">
             <Input
               readOnly
@@ -127,7 +147,20 @@ export function ConfigPanel({ onProcess }: ConfigPanelProps) {
 
         {/* 签到率阈值 */}
         <div className="space-y-2">
-          <Label>签到率阈值 (%)</Label>
+          <div className="flex items-center gap-1">
+            <Label>签到率阈值 (%)</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>设置计算平时成绩的签到率标准</p>
+                  <p>例如：设置为80%表示签到率达到80%可获得满分</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <Input
             type="number"
             min={0}
