@@ -18,14 +18,14 @@ const tools = [
 
 export function HomePage() {
   return (
-    <div className="w-full space-y-6 md:space-y-8">
-      <div className="space-y-2 text-center md:mb-8">
-        <h1 className="text-3xl font-bold">工具箱</h1>
+    <div className="flex flex-col p-4 flex-1 gap-4 md:justify-center">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold">狗狗工具箱</h1>
         <p className="text-muted-foreground">
           选择下面的工具开始使用
         </p>
       </div>
-      <div className="flex flex-col md:flex-row items-center justify-center gap-2 mt-4 md:gap-4 md:mt-0">
+      <div className="flex flex-col items-center justify-start gap-2 md:flex-row md:justify-center md:gap-4">
         {tools.map((tool) => (
           <ToolCard key={tool.to} {...tool} />
         ))}
