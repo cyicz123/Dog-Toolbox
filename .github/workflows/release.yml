@@ -1,0 +1,99 @@
+# 这是一个 GitHub Actions 工作流配置文件，用于自动化发布流程
+name: Release
+
+# 定义触发工作流的条件
+on:
+  push:
+    tags:
+      - 'v*'    # 当推送以 'v' 开头的标签时触发（例如 v1.0.0）
+  workflow_dispatch:    # 允许手动触发工作流
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest' # for Intel based macs.
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Update version in package.json
+        run: |
+          $version = "${{ steps.get_version.outputs.VERSION }}"
+          $content = Get-Content package.json -Raw
+          $newContent = $content -replace '"version": ".*?"', "`"version`": `"$version`""
+          $newContent | Set-Content package.json -NoNewline
+        shell: pwsh
+
+      - name: Update version in tauri.conf.json
+        run: |
+          $version = "${{ steps.get_version.outputs.VERSION }}"
+          $content = Get-Content src-tauri/tauri.conf.json -Raw
+          $newContent = $content -replace '"version": ".*?"', "`"version`": `"$version`""
+          $newContent | Set-Content src-tauri/tauri.conf.json -NoNewline
+        shell: pwsh
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          run_install: false
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Build the app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: '狗狗工具箱 v${{ steps.get_version.outputs.VERSION }}'
+          releaseBody: |
+            请查看 [CHANGELOG.md](https://github.com/cyicz123/Dog-Toolbox/blob/main/CHANGELOG.md) 了解详细更新内容。
+          releaseDraft: true
+          prerelease: false
