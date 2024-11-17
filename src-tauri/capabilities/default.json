@@ -2,6 +2,11 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
   "windows": [
     "main"
   ],
@@ -13,6 +18,8 @@
     "fs:allow-write",
     "fs:allow-read-dir",
     "fs:allow-read-file",
-    "fs:allow-write-file"
+    "fs:allow-write-file",
+    "updater:allow-check",
+    "updater:allow-download-and-install"
   ]
 }
