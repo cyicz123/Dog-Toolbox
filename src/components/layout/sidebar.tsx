@@ -1,8 +1,9 @@
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { NavButton } from "@/components/nav-button";
 import { AboutTooltip } from "@/components/about-tooltip";
+import { checkForUpdates } from "@/lib/updater";
 
 export function Sidebar() {
   const { theme, setTheme } = useTheme();
@@ -24,6 +25,14 @@ export function Sidebar() {
           )}
         </Button>
         <AboutTooltip />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => checkForUpdates()}
+          title="检查更新"
+        >
+          <RefreshCw className="h-[1.2rem] w-[1.2rem]" />
+        </Button>
       </div>
     </div>
   );
